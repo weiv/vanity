@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bathroom Vanity Planner</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <h1>Bathroom Vanity Planner</h1>
+  <span>1" = 1 unit · Click ✕ on wall pieces to remove · Drag from catalog to wall</span>
+</header>
+
+<div class="main">
+
+  <!-- Floor Plan -->
+  <div class="floor-plan-card">
+    <h2>Floor Plan</h2>
+    <svg id="floorPlanSvg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="fp-legend">
+      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#b0c4de"></div> Bathtub</div>
+      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#b8d8c8"></div> Shower</div>
+      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#e8e0d0"></div> Toilet</div>
+      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#4a90d9"></div> W1 Vanity</div>
+      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#e56b6f"></div> W2 Vanity</div>
+    </div>
+  </div>
+
+  <!-- Wall Planners -->
+  <div class="walls-card">
+    <h2>Wall Planners</h2>
+
+    <div class="wall-section">
+      <div class="wall-header">
+        <span class="wall-label" style="color:#2472c8">W1 — East Wall</span>
+        <span class="wall-stats" id="w1Stats"></span>
+      </div>
+      <div class="wall-strip-wrapper">
+        <div class="wall-strip" id="wallW1" data-wall="W1"
+             ondragover="onDragOver(event)" ondrop="onDrop(event,'W1')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+      <div class="wall-elevation-wrapper">
+        <div class="wall-elevation-label">elevation — facing W1</div>
+        <svg id="elevW1" xmlns="http://www.w3.org/2000/svg" style="display:block"></svg>
+      </div>
+    </div>
+
+    <div class="wall-section">
+      <div class="wall-header">
+        <span class="wall-label" style="color:#c0392b">W2 — West Wall</span>
+        <span class="wall-stats" id="w2Stats"></span>
+      </div>
+      <div class="wall-strip-wrapper">
+        <div class="wall-strip" id="wallW2" data-wall="W2"
+             ondragover="onDragOver(event)" ondrop="onDrop(event,'W2')" ondragleave="onDragLeave(event)">
+        </div>
+      </div>
+      <div class="wall-elevation-wrapper">
+        <div class="wall-elevation-label">elevation — facing W2</div>
+        <svg id="elevW2" xmlns="http://www.w3.org/2000/svg" style="display:block"></svg>
+      </div>
+    </div>
+
+    <div class="summary-bar">
+      <div class="summary-box" id="sumW1">
+        <h3>W1 Total Width Used</h3>
+        <div><span class="count" id="sumW1val">0</span><span class="unit">"</span></div>
+        <div style="font-size:11px;color:#888;margin-top:2px">of 72" available</div>
+      </div>
+      <div class="summary-box" id="sumW2">
+        <h3>W2 Total Width Used</h3>
+        <div><span class="count" id="sumW2val">0</span><span class="unit">"</span></div>
+        <div style="font-size:11px;color:#888;margin-top:2px">of 48" available</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Catalog -->
+  <div class="catalog-card">
+    <h2>Vanity Catalog</h2>
+    <div class="catalog-filters">
+      <button class="filter-btn active" onclick="filterCatalog('all',this)">All</button>
+      <button class="filter-btn" onclick="filterCatalog('sink',this)">Sink</button>
+      <button class="filter-btn" onclick="filterCatalog('drawer',this)">Drawer</button>
+      <button class="filter-btn" onclick="filterCatalog('base',this)">Base</button>
+      <button class="filter-btn" onclick="filterCatalog('linen',this)">Linen</button>
+      <button class="filter-btn" onclick="filterCatalog('mirror',this)">Mirror</button>
+      <button class="filter-btn" onclick="filterCatalog('medicine',this)">Medicine</button>
+    </div>
+    <div class="catalog-grid" id="catalogGrid"></div>
+  </div>
+
+</div>
+
+<script src="js/constants.js"></script>
+<script src="js/data.js"></script>
+<script src="js/svg-utils.js"></script>
+<script src="js/floorplan.js"></script>
+<script src="js/elevation.js"></script>
+<script src="js/wall-strip.js"></script>
+<script src="js/catalog.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
