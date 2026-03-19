@@ -117,6 +117,10 @@ header span { font-size: 13px; opacity: 0.7; }
 .catalog-item.dragging { opacity: .4; }
 .wall-strip.drag-over { background: #e8f4fd; }
 
+/* Two-column wall rows */
+.walls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.wall-col { min-width: 0; }
+
 /* Elevation */
-.wall-elevation-wrapper { overflow-x: auto; margin-top: 6px; border: 1px solid #e0e0e0; border-radius: 4px; background: #f0ede8; }
+.wall-elevation-wrapper { overflow-x: auto; border: 1px solid #e0e0e0; border-radius: 4px; background: #f0ede8; }
 .wall-elevation-label { font-size: 10px; color: #aaa; padding: 2px 6px 0; font-style: italic; }

@@ -14,14 +14,21 @@ function renderElevation(wallId) {
   // Floor line
   svg.appendChild(el('line', { x1:0, y1:ELEV_FLOOR_Y, x2:totalW, y2:ELEV_FLOOR_Y, stroke:'#666', 'stroke-width':2 }));
 
-  let xOff = 0;
+  // W2 faces west: standing in room, north is on your right → render right-to-left
+  const flip = wallId === 'W2';
+  let xOff = flip ? totalW : 0;
   for (const { vanity, sinkPos } of wall.placements) {
+    const pieceW = vanity.w * STRIP_SCALE;
+    if (flip) xOff -= pieceW;
     drawElevPiece(svg, vanity, sinkPos, xOff);
-    xOff += vanity.w * STRIP_SCALE;
+    if (!flip) xOff += pieceW;
   }
 
-  // Remaining space
-  if (xOff < totalW) {
+  // Remaining space (south end: left for W2, right for W1)
+  if (flip && xOff > 0) {
+    svg.appendChild(el('rect', { x:0, y:0, width:xOff, height:ELEV_SVG_H, fill:'rgba(200,200,200,0.12)' }));
+    svg.appendChild(el('line', { x1:xOff, y1:0, x2:xOff, y2:ELEV_FLOOR_Y, stroke:'#ccc', 'stroke-width':1, 'stroke-dasharray':'3,3' }));
+  } else if (!flip && xOff < totalW) {
     svg.appendChild(el('rect', { x:xOff, y:0, width:totalW-xOff, height:ELEV_SVG_H, fill:'rgba(200,200,200,0.12)' }));
     svg.appendChild(el('line', { x1:xOff, y1:0, x2:xOff, y2:ELEV_FLOOR_Y, stroke:'#ccc', 'stroke-width':1, 'stroke-dasharray':'3,3' }));
   }
