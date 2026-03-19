@@ -36,14 +36,14 @@
     <div class="walls-row">
       <div class="wall-col">
         <div class="wall-elevation-wrapper">
-          <div class="wall-elevation-label">elevation — facing W1 (east)</div>
-          <svg id="elevW1" xmlns="http://www.w3.org/2000/svg" style="display:block"></svg>
+          <div class="wall-elevation-label">elevation — facing W2 (west)</div>
+          <svg id="elevW2" xmlns="http://www.w3.org/2000/svg" style="display:block"></svg>
         </div>
       </div>
       <div class="wall-col">
         <div class="wall-elevation-wrapper">
-          <div class="wall-elevation-label">elevation — facing W2 (west)</div>
-          <svg id="elevW2" xmlns="http://www.w3.org/2000/svg" style="display:block"></svg>
+          <div class="wall-elevation-label">elevation — facing W1 (east)</div>
+          <svg id="elevW1" xmlns="http://www.w3.org/2000/svg" style="display:block"></svg>
         </div>
       </div>
     </div>
@@ -52,38 +52,46 @@
     <div class="walls-row">
       <div class="wall-col">
         <div class="wall-header">
-          <span class="wall-label" style="color:#2472c8">W1 — East Wall</span>
-          <span class="wall-stats" id="w1Stats"></span>
+          <span class="wall-label" style="color:#c0392b">W2 — West Wall</span>
+          <span class="wall-stats" id="w2Stats"></span>
         </div>
         <div class="wall-strip-wrapper">
-          <div class="wall-strip" id="wallW1" data-wall="W1"
-               ondragover="onDragOver(event)" ondrop="onDrop(event,'W1')" ondragleave="onDragLeave(event)">
+          <div class="wall-upper-label">upper wall (mirrors &amp; medicine)</div>
+          <div class="wall-upper-strip" id="wallUpperW2" data-wall="W2"
+               ondragover="onDragOver(event)" ondrop="onDrop(event,'W2')" ondragleave="onDragLeave(event)">
+          </div>
+          <div class="wall-strip" id="wallW2" data-wall="W2"
+               ondragover="onDragOver(event)" ondrop="onDrop(event,'W2')" ondragleave="onDragLeave(event)">
           </div>
         </div>
       </div>
       <div class="wall-col">
         <div class="wall-header">
-          <span class="wall-label" style="color:#c0392b">W2 — West Wall</span>
-          <span class="wall-stats" id="w2Stats"></span>
+          <span class="wall-label" style="color:#2472c8">W1 — East Wall</span>
+          <span class="wall-stats" id="w1Stats"></span>
         </div>
         <div class="wall-strip-wrapper">
-          <div class="wall-strip" id="wallW2" data-wall="W2"
-               ondragover="onDragOver(event)" ondrop="onDrop(event,'W2')" ondragleave="onDragLeave(event)">
+          <div class="wall-upper-label">upper wall (mirrors &amp; medicine)</div>
+          <div class="wall-upper-strip" id="wallUpperW1" data-wall="W1"
+               ondragover="onDragOver(event)" ondrop="onDrop(event,'W1')" ondragleave="onDragLeave(event)">
+          </div>
+          <div class="wall-strip" id="wallW1" data-wall="W1"
+               ondragover="onDragOver(event)" ondrop="onDrop(event,'W1')" ondragleave="onDragLeave(event)">
           </div>
         </div>
       </div>
     </div>
 
     <div class="summary-bar">
-      <div class="summary-box" id="sumW1">
-        <h3>W1 Total Width Used</h3>
-        <div><span class="count" id="sumW1val">0</span><span class="unit">"</span></div>
-        <div style="font-size:11px;color:#888;margin-top:2px">of 72" available</div>
-      </div>
       <div class="summary-box" id="sumW2">
         <h3>W2 Total Width Used</h3>
         <div><span class="count" id="sumW2val">0</span><span class="unit">"</span></div>
         <div style="font-size:11px;color:#888;margin-top:2px">of 48" available</div>
+      </div>
+      <div class="summary-box" id="sumW1">
+        <h3>W1 Total Width Used</h3>
+        <div><span class="count" id="sumW1val">0</span><span class="unit">"</span></div>
+        <div style="font-size:11px;color:#888;margin-top:2px">of 72" available</div>
       </div>
     </div>
   </div>

@@ -121,6 +121,25 @@ header span { font-size: 13px; opacity: 0.7; }
 .walls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
 .wall-col { min-width: 0; }
 
+/* Upper (wall-mounted) strip */
+.wall-upper-label { font-size: 10px; color: #aaa; font-style: italic; margin-bottom: 2px; }
+.wall-upper-strip {
+  display: flex; align-items: stretch;
+  height: 44px; /* must match UPPER_STRIP_H in JS */
+  min-width: 100%;
+  border: 2px dashed #bbb; border-radius: 4px;
+  background: repeating-linear-gradient(90deg, #fafafa 0px, #fafafa 4px, #f0f0f0 4px, #f0f0f0 5px);
+  position: relative; overflow: hidden;
+  margin-bottom: 4px;
+}
+.wall-upper-strip.over-limit { border-color: #e74c3c; }
+.wall-piece.mounted { opacity: 0.75; border-style: dashed; }
+.wall-piece-mount-badge {
+  font-size: 8px; color: rgba(0,0,0,0.5); font-weight: 700;
+  background: rgba(255,255,255,0.5); border-radius: 2px; padding: 0 2px;
+  position: absolute; bottom: 3px;
+}
+
 /* Elevation */
 .wall-elevation-wrapper { overflow-x: auto; border: 1px solid #e0e0e0; border-radius: 4px; background: #f0ede8; }
 .wall-elevation-label { font-size: 10px; color: #aaa; padding: 2px 6px 0; font-style: italic; }

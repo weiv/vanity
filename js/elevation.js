@@ -24,6 +24,15 @@ function renderElevation(wallId) {
     if (!flip) xOff += pieceW;
   }
 
+  // Wall-mounted items (upper list) — rendered independently from floor items
+  let xOffUpper = flip ? totalW : 0;
+  for (const { vanity } of wall.upper) {
+    const pieceW = vanity.w * STRIP_SCALE;
+    if (flip) xOffUpper -= pieceW;
+    drawElevPiece(svg, vanity, null, xOffUpper);
+    if (!flip) xOffUpper += pieceW;
+  }
+
   // Remaining space (south end: left for W2, right for W1)
   if (flip && xOff > 0) {
     svg.appendChild(el('rect', { x:0, y:0, width:xOff, height:ELEV_SVG_H, fill:'rgba(200,200,200,0.12)' }));

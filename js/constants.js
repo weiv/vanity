@@ -1,5 +1,6 @@
 const STRIP_SCALE = 4;   // px per inch in wall strip
 const STRIP_H = 88;      // must match CSS .wall-strip height
+const UPPER_STRIP_H = 44; // must match CSS .wall-upper-strip height
 const OX = 14, OY = 10; // floor plan SVG offset
 // ASCII grid: 19 columns span W2→W1 = 130" actual; 1 row = 12" (wall heights check out)
 const H_SCALE = 130 / 19; // px per ASCII column (≈ 6.84 px = 6.84")

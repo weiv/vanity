@@ -2,7 +2,10 @@
 function saveState() {
   const data = {};
   for (const [wallId, wall] of Object.entries(WALLS))
-    data[wallId] = wall.placements.map(pl => ({ id: pl.vanity.id, sinkPos: pl.sinkPos }));
+    data[wallId] = {
+      floor: wall.placements.map(pl => ({ id: pl.vanity.id, sinkPos: pl.sinkPos })),
+      upper: wall.upper.map(pl => ({ id: pl.vanity.id, sinkPos: pl.sinkPos })),
+    };
   localStorage.setItem('vanityPlanner', JSON.stringify(data));
 }
 
@@ -10,9 +13,16 @@ function loadState() {
   try {
     const raw = localStorage.getItem('vanityPlanner');
     if (!raw) return;
-    for (const [wallId, items] of Object.entries(JSON.parse(raw))) {
+    for (const [wallId, saved] of Object.entries(JSON.parse(raw))) {
       if (!WALLS[wallId]) continue;
-      WALLS[wallId].placements = items.flatMap(({ id, sinkPos }) => {
+      // Backwards-compat: old format was an array (floor only)
+      const floorItems = Array.isArray(saved) ? saved : (saved.floor || []);
+      const upperItems = Array.isArray(saved) ? [] : (saved.upper || []);
+      WALLS[wallId].placements = floorItems.flatMap(({ id, sinkPos }) => {
+        const vanity = VANITIES.find(v => v.id === id);
+        return vanity ? [{ vanity, sinkPos }] : [];
+      });
+      WALLS[wallId].upper = upperItems.flatMap(({ id, sinkPos }) => {
         const vanity = VANITIES.find(v => v.id === id);
         return vanity ? [{ vanity, sinkPos }] : [];
       });
@@ -24,12 +34,21 @@ function loadState() {
 function addToWall(wallId, vanityId) {
   const vanity = VANITIES.find(v => v.id === vanityId);
   if (!vanity) return;
-  WALLS[wallId].placements.push({ vanity, sinkPos: vanity.type === 'sink' ? (vanity.fixedSinkPos || getSinkPos(vanityId)) : null });
+  const placement = { vanity, sinkPos: vanity.type === 'sink' ? (vanity.fixedSinkPos || getSinkPos(vanityId)) : null };
+  if (isMounted(vanity)) {
+    WALLS[wallId].upper.push(placement);
+  } else {
+    WALLS[wallId].placements.push(placement);
+  }
   saveState(); renderWall(wallId); renderElevation(wallId); redrawVanities();
 }
 
-function removeFromWall(wallId, idx) {
-  WALLS[wallId].placements.splice(idx, 1);
+function removeFromWall(wallId, idx, fromUpper) {
+  if (fromUpper) {
+    WALLS[wallId].upper.splice(idx, 1);
+  } else {
+    WALLS[wallId].placements.splice(idx, 1);
+  }
   saveState(); renderWall(wallId); renderElevation(wallId); redrawVanities();
 }
 

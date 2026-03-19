@@ -96,11 +96,27 @@ function drawWallVanities(group, placements, anchorCol, anchorRow, dir) {
   }
 }
 
+function drawWallMounted(group, upper, anchorCol, anchorRow, dir) {
+  const [ax, ay] = p(anchorCol, anchorRow);
+  let offset = 0;
+  for (const { vanity } of upper) {
+    const pw = vanity.w, pd = Math.max(vanity.d, 0.75); // at least 0.75" visible
+    const vy = ay + offset;
+    const vx = dir > 0 ? ax : ax - pd;
+    group.appendChild(el('rect', { x:vx, y:vy, width:pd, height:pw,
+      fill:vanity.color, stroke:'#555', 'stroke-width':0.5,
+      'stroke-dasharray':'2,1.5', opacity:0.55 }));
+    offset += pw;
+  }
+}
+
 function redrawVanities() {
   const group = document.getElementById('vanityLayer');
   group.innerHTML = '';
   drawWallVanities(group, WALLS.W1.placements, 23, 9, -1);
   drawWallVanities(group, WALLS.W2.placements,  4, 9, +1);
+  drawWallMounted(group, WALLS.W1.upper, 23, 9, -1);
+  drawWallMounted(group, WALLS.W2.upper,  4, 9, +1);
 }
 
 function drawFloorPlan() {

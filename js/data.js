@@ -33,9 +33,11 @@ const VANITIES = [
 ];
 
 const WALLS = {
-  W1: { label:'W1 (East)', limit:72, placements:[], color:'#4a90d9' },
-  W2: { label:'W2 (West)', limit:48, placements:[], color:'#e56b6f' },
+  W1: { label:'W1 (East)', limit:72, placements:[], upper:[], color:'#4a90d9' },
+  W2: { label:'W2 (West)', limit:48, placements:[], upper:[], color:'#e56b6f' },
 };
+
+function isMounted(vanity) { return vanity.type === 'mirror' || vanity.type === 'medicine'; }
 
 // Sink bowl position selected in catalog (survives filter changes)
 const sinkPositions = {}; // vanityId -> 'L'|'C'|'R', default 'C'
