@@ -24,9 +24,9 @@ function initFloorPlan() {
 
   // Fixtures
   const fixtures = [
-    { c1:[10,2], c2:[17,9], fill:'#b0c4de', label:'TUB',    lsize:5.5, lfill:'#444'   },
-    { c1:[4,5],  c2:[10,9], fill:'#b8d8c8', label:'SHOWER', lsize:5,   lfill:'#2d6a4f'},
-    { c1:[17,2], c2:[23,9], fill:'#e8e0d0', label:'WC',     lsize:5.5, lfill:'#555'   },
+    { c1:[10,2], c2:[19,5],  fill:'#b0c4de', label:'TUB',    lsize:5.5, lfill:'#444'   },
+    { c1:[4,5],  c2:[10,10], fill:'#b8d8c8', label:'SHOWER', lsize:5,   lfill:'#2d6a4f'},
+    { c1:[19,2], c2:[23,10], fill:'#e8e0d0', label:'WC',     lsize:5.5, lfill:'#555'   },
   ];
   for (const { c1, c2, fill, label, lsize, lfill } of fixtures) {
     const [x1,y1] = p(...c1), [x2,y2] = p(...c2);
@@ -36,9 +36,9 @@ function initFloorPlan() {
 
   // Wall highlights + labels
   const walls = [
-    // c2 row = c1 row + wall_length/V_SCALE: W1=72"/12=6rows, W2=48"/12=4rows
-    { c1:[23,9], c2:[23,15], stroke:'#4a90d9', label:'W1', dim:'72"',  lx:+7,  dx:+3,  langle:-90, la:+11 },
-    { c1:[4,9],  c2:[4,13],  stroke:'#e56b6f', label:'W2', dim:'48"',  lx:-8,  dx:-3,  langle:90,  la:-12 },
+    // Highlights span the usable wall: W1 row10→16 (72"=6rows), W2 row10→14 (48"=4rows)
+    { c1:[23,10], c2:[23,16], stroke:'#4a90d9', label:'W1', dim:'72"',  lx:+7,  dx:+3,  langle:-90, la:+11 },
+    { c1:[4,10],  c2:[4,14],  stroke:'#e56b6f', label:'W2', dim:'48"',  lx:-8,  dx:-3,  langle:90,  la:-12 },
   ];
   for (const w of walls) {
     const [x1,y1] = p(...w.c1), [x2,y2] = p(...w.c2);
@@ -72,12 +72,14 @@ function drawSinkBowl(target, cx, cy, bowlW, bowlH) {
 
 // dir: +1 = protrude away from wall toward increasing x (W2/left wall)
 //      -1 = protrude toward decreasing x (W1/right wall)
+// anchorRow = bottom of usable wall; pieces stack upward from there.
 function drawWallVanities(group, placements, anchorCol, anchorRow, dir) {
   const [ax, ay] = p(anchorCol, anchorRow);
   let offset = 0;
   for (const { vanity, sinkPos } of placements) {
     const pw = vanity.w, pd = vanity.d;
-    const vy = ay + offset;
+    offset += pw;
+    const vy = ay - offset;
     const vx = dir > 0 ? ax : ax - pd;
     group.appendChild(el('rect', { x:vx, y:vy, width:pd, height:pw,
       fill:vanity.color, stroke:'rgba(0,0,0,.3)', 'stroke-width':0.6, opacity:0.85 }));
@@ -92,7 +94,6 @@ function drawWallVanities(group, placements, anchorCol, anchorRow, dir) {
       const faucetX = dir > 0 ? ax : ax - 2;
       group.appendChild(el('rect', { x:faucetX, y:vy + scy - 3, width:2, height:6, rx:1, fill:'rgba(0,0,0,0.4)' }));
     }
-    offset += pw;
   }
 }
 
@@ -101,22 +102,23 @@ function drawWallMounted(group, upper, anchorCol, anchorRow, dir) {
   let offset = 0;
   for (const { vanity } of upper) {
     const pw = vanity.w, pd = Math.max(vanity.d, 0.75); // at least 0.75" visible
-    const vy = ay + offset;
+    offset += pw;
+    const vy = ay - offset;
     const vx = dir > 0 ? ax : ax - pd;
     group.appendChild(el('rect', { x:vx, y:vy, width:pd, height:pw,
       fill:vanity.color, stroke:'#555', 'stroke-width':0.5,
       'stroke-dasharray':'2,1.5', opacity:0.55 }));
-    offset += pw;
   }
 }
 
 function redrawVanities() {
   const group = document.getElementById('vanityLayer');
   group.innerHTML = '';
-  drawWallVanities(group, WALLS.W1.placements, 23, 9, -1);
-  drawWallVanities(group, WALLS.W2.placements,  4, 9, +1);
-  drawWallMounted(group, WALLS.W1.upper, 23, 9, -1);
-  drawWallMounted(group, WALLS.W2.upper,  4, 9, +1);
+  // Anchor at bottom of usable wall: W1→row 16 (south wall), W2→row 14 (slant start)
+  drawWallVanities(group, WALLS.W1.placements, 23, 16, -1);
+  drawWallVanities(group, WALLS.W2.placements,  4, 14, +1);
+  drawWallMounted(group, WALLS.W1.upper, 23, 16, -1);
+  drawWallMounted(group, WALLS.W2.upper,  4, 14, +1);
 }
 
 function drawFloorPlan() {
