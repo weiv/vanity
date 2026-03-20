@@ -354,6 +354,59 @@ function animate3d() {
   renderer.render(scene, camera);
 }
 
+// ── Room shell ────────────────────────────────────────────────────────────────
+// Coordinate mapping from floorplan.js grid:
+//   col c → x = (c − 4) × (130/19)   [col 4 = x 0, col 23 = x 130]
+//   row r → z = 96 + (r − 10) × 12   [row 10 = z 96 (anchorZ), 1 row = 12"]
+// Key x boundaries (approx): tub/shower divider x≈41, WC divider x≈103
+// Key z boundaries: shower/tub step z=36, fixture/vanity boundary z=96
+const X_DIV  = Math.round(6  * 130 / 19); // ≈ 41  — shower|tub+WC divider
+const X_WC   = Math.round(15 * 130 / 19); // ≈ 103 — tub|WC divider
+const Z_STEP = 36;  // z where shower front wall meets the tub
+const Z_FIX  = 96;  // z where fixture zone ends / vanity zone begins
+const ROOM_H = 96;  // 8-foot ceiling
+const ROOM_LEN = 220;
+
+function buildRoom() {
+  const wallMat  = new THREE.MeshPhongMaterial({ color: 0xf0ebe0, shininess: 4, side: THREE.DoubleSide });
+  const floorMat = new THREE.MeshPhongMaterial({ color: 0xb0a090, shininess: 10 });
+
+  function wall(w, h, x, y, z, ry) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), wallMat);
+    m.rotation.y = ry || 0;
+    m.position.set(x, y, z);
+    scene.add(m);
+  }
+
+  const cy = ROOM_H / 2;
+
+  // Vanity side walls (full room length)
+  wall(ROOM_LEN, ROOM_H,   0, cy, ROOM_LEN / 2,  Math.PI / 2);  // W2 west wall
+  wall(ROOM_LEN, ROOM_H, 130, cy, ROOM_LEN / 2, -Math.PI / 2);  // W1 east wall
+
+  // Back wall (z=0): spans tub + WC only (shower has no back wall at x<X_DIV)
+  wall(130 - X_DIV, ROOM_H, (X_DIV + 130) / 2, cy, 0);
+
+  // Shower front step (z=Z_STEP, x=0→X_DIV): boundary between shower depth and tub depth
+  wall(X_DIV, ROOM_H, X_DIV / 2, cy, Z_STEP);
+
+  // Shower/tub+WC vertical divider (x=X_DIV, z=0→Z_FIX)
+  wall(Z_FIX, ROOM_H, X_DIV, cy, Z_FIX / 2, Math.PI / 2);
+
+  // WC partition (x=X_WC, z=0→Z_FIX): separates tub from WC
+  wall(Z_FIX, ROOM_H, X_WC, cy, Z_FIX / 2, Math.PI / 2);
+
+  // East-west walls at z=Z_FIX closing off shower and WC toward the vanity zone
+  wall(X_DIV,       ROOM_H, X_DIV / 2,             cy, Z_FIX);  // shower end wall (x=0→41)
+  wall(130 - X_WC,  ROOM_H, (X_WC + 130) / 2,      cy, Z_FIX);  // WC end wall (x=103→130)
+
+  // Floor
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(130, ROOM_LEN), floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.set(65, 0, ROOM_LEN / 2);
+  scene.add(floor);
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 function init3d() {
   const canvas = document.getElementById('render3dCanvas');
@@ -371,12 +424,12 @@ function init3d() {
   scene.background = new THREE.Color(0xf0f2f5);
 
   // Camera — room interior, facing both walls so face details are visible
-  camera = new THREE.PerspectiveCamera(50, w / h, 1, 2000);
-  camera.position.set(65, 80, -50);
+  camera = new THREE.PerspectiveCamera(65, w / h, 1, 2000);
+  camera.position.set(65, 100, 370);
 
   // Controls
   controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.target.set(65, 35, 120);
+  controls.target.set(65, 35, 96);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.minDistance = 40;
@@ -396,13 +449,16 @@ function init3d() {
   fillLight.position.set(-80, 60, 200);
   scene.add(fillLight);
 
+  // Room shell (hints)
+  buildRoom();
+
   // Vanity group
   vanityGroup = new THREE.Group();
   scene.add(vanityGroup);
 
   rendererReady = true;
 
-  window.addEventListener('resize', onResize3d);
+  new ResizeObserver(onResize3d).observe(canvas);
 
   redraw3d();
   animate3d();
