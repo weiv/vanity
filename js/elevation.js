@@ -44,7 +44,7 @@ function renderElevation(wallId) {
 }
 
 function drawElevPiece(svg, vanity, sinkPos, x0) {
-  const isMounted = vanity.type === 'mirror' || vanity.type === 'medicine';
+  const isMounted = vanity.type === 'mirror' || vanity.type === 'medicine' || vanity.type === 'filler';
   const w    = vanity.w * STRIP_SCALE;
   const h    = vanity.h * ELEV_Y;
   const topY = isMounted ? ELEV_MOUNT_Y - h : ELEV_FLOOR_Y - h;
@@ -69,6 +69,7 @@ function drawElevPiece(svg, vanity, sinkPos, x0) {
   if (vanity.type === 'linen')    drawElevLinen(svg, vanity, x0, innerTop, w, innerH);
   if (vanity.type === 'medicine') drawElevMedicine(svg, x0, topY, w, h);
   if (vanity.type === 'mirror')   drawElevMirror(svg, x0, topY, w, h);
+  if (vanity.type === 'filler')   drawElevFiller(svg, x0, topY, w, h);
 
   // Labels below floor line
   svg.appendChild(svgText(x0 + w/2, ELEV_FLOOR_Y + 12, `${vanity.w}"`, { size:6,   fill:'#666' }));
@@ -206,6 +207,20 @@ function drawElevTwoDoors(svg, x0, top, totalW, h, curved) {
   const pullY = top + h * 0.5;
   svg.appendChild(elevPull(mid-10, pullY-5, mid-10, pullY+5));
   svg.appendChild(elevPull(mid+8,  pullY-5, mid+8,  pullY+5));
+}
+
+// ── hanging filler ───────────────────────────────────────────────────────────
+function drawElevFiller(svg, x0, topY, w, h) {
+  // Outer frame
+  svg.appendChild(el('rect', { x:x0+2, y:topY+2, width:w-4, height:h-4, rx:1,
+    fill:'rgba(255,255,255,0.15)', stroke:'rgba(0,0,0,0.35)', 'stroke-width':0.8 }));
+  // 2 horizontal shelf lines dividing the panel into 3 open bays
+  const bay = (h - 4) / 3;
+  for (let i = 1; i <= 2; i++) {
+    const sy = topY + 2 + bay * i;
+    svg.appendChild(el('line', { x1:x0+2, y1:sy, x2:x0+w-2, y2:sy,
+      stroke:'rgba(0,0,0,0.3)', 'stroke-width':1 }));
+  }
 }
 
 function elevPull(x1, y1, x2, y2) {

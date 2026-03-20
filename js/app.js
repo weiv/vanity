@@ -40,7 +40,7 @@ function addToWall(wallId, vanityId) {
   } else {
     WALLS[wallId].placements.push(placement);
   }
-  saveState(); renderWall(wallId); renderElevation(wallId); redrawVanities();
+  saveState(); renderWall(wallId); renderElevation(wallId); redrawVanities(); redraw3d();
 }
 
 function removeFromWall(wallId, idx, fromUpper) {
@@ -49,7 +49,7 @@ function removeFromWall(wallId, idx, fromUpper) {
   } else {
     WALLS[wallId].placements.splice(idx, 1);
   }
-  saveState(); renderWall(wallId); renderElevation(wallId); redrawVanities();
+  saveState(); renderWall(wallId); renderElevation(wallId); redrawVanities(); redraw3d();
 }
 
 // ─── DRAG AND DROP ────────────────────────────────────────────────────────────
@@ -68,3 +68,4 @@ renderWall('W2');
 renderElevation('W1');
 renderElevation('W2');
 drawFloorPlan();
+init3d();

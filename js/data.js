@@ -30,6 +30,9 @@ const VANITIES = [
   { id:'WV12336',    name:'Medicine Cab 12"',          type:'medicine', w:12, h:33,   d:6,    color:'#87CEEB' },
   { id:'SVAM2427',   name:'Mirror 24"',                type:'mirror',   w:24, h:27,   d:0.75, color:'#F0E68C' },
   { id:'SVAM3027',   name:'Mirror 30"',                type:'mirror',   w:30, h:27,   d:0.75, color:'#F0E68C' },
+  // Hanging fillers (wall-mounted open panels, 12" wide)
+  { id:'SVAF1218',   name:'Hanging Filler 12"×18"',   type:'filler',   w:12, h:18,   d:4,    color:'#C8AE95' },
+  { id:'SVAF1227',   name:'Hanging Filler 12"×27"',   type:'filler',   w:12, h:27,   d:4,    color:'#C8AE95' },
 ];
 
 const WALLS = {
@@ -37,7 +40,7 @@ const WALLS = {
   W2: { label:'W2 (West)', limit:48, placements:[], upper:[], color:'#e56b6f' },
 };
 
-function isMounted(vanity) { return vanity.type === 'mirror' || vanity.type === 'medicine'; }
+function isMounted(vanity) { return vanity.type === 'mirror' || vanity.type === 'medicine' || vanity.type === 'filler'; }
 
 // Sink bowl position selected in catalog (survives filter changes)
 const sinkPositions = {}; // vanityId -> 'L'|'C'|'R', default 'C'
