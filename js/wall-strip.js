@@ -28,8 +28,55 @@ function makePiece(placement, wallId, idx, isUpper) {
 
   const mountBadge = isUpper ? '<span class="wall-piece-mount-badge">↑ WALL</span>' : '';
   const posLabel = v.type === 'sink' ? ` · ${placement.sinkPos || 'C'}` : '';
-  piece.title = `${v.name}\n${v.w}" wide × ${v.d}" deep × ${v.h}" tall${posLabel}\nClick to remove`;
+  piece.title = `${v.name}\n${v.w}" wide × ${v.d}" deep × ${v.h}" tall${posLabel}\nDrag to reorder · Click to remove`;
   piece.innerHTML = `<span class="wall-piece-code">${v.id}</span><span class="wall-piece-width">${v.w}"</span>${mountBadge}${sinkSvg}`;
+
+  piece.draggable = true;
+
+  piece.addEventListener('dragstart', e => {
+    e.stopPropagation();
+    stripDrag = { wallId, idx, isUpper };
+    dragVanityId = null;
+    piece.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', ''); // required by Firefox
+  });
+
+  piece.addEventListener('dragend', () => {
+    stripDrag = null;
+    piece.classList.remove('dragging');
+    document.querySelectorAll('.insert-before,.insert-after')
+      .forEach(el => el.classList.remove('insert-before','insert-after'));
+  });
+
+  piece.addEventListener('dragover', e => {
+    if (!stripDrag || stripDrag.isUpper !== isUpper) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    const { left, width } = piece.getBoundingClientRect();
+    document.querySelectorAll('.insert-before,.insert-after')
+      .forEach(el => el.classList.remove('insert-before','insert-after'));
+    piece.classList.add(e.clientX < left + width / 2 ? 'insert-before' : 'insert-after');
+  });
+
+  piece.addEventListener('dragleave', () => {
+    piece.classList.remove('insert-before','insert-after');
+  });
+
+  piece.addEventListener('drop', e => {
+    if (!stripDrag || stripDrag.isUpper !== isUpper) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const { left, width } = piece.getBoundingClientRect();
+    const insertBefore = e.clientX < left + width / 2;
+    let toIdx = insertBefore ? idx : idx + 1;
+    // When reordering within the same strip, account for the item being removed first
+    if (stripDrag.wallId === wallId && stripDrag.isUpper === isUpper && toIdx > stripDrag.idx) toIdx--;
+    piece.classList.remove('insert-before','insert-after');
+    reorderStrip(stripDrag.wallId, stripDrag.idx, wallId, toIdx, isUpper);
+  });
+
   piece.onclick = () => removeFromWall(wallId, idx, isUpper);
   return piece;
 }

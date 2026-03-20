@@ -54,11 +54,23 @@ function removeFromWall(wallId, idx, fromUpper) {
 
 // ─── DRAG AND DROP ────────────────────────────────────────────────────────────
 let dragVanityId = null;
+let stripDrag = null; // { wallId, idx, isUpper } — set when dragging a strip piece
+
 function onDragStart(e) { dragVanityId = e.currentTarget.dataset.vanityId; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'copy'; }
 function onDragEnd(e)   { e.currentTarget.classList.remove('dragging'); dragVanityId = null; }
-function onDragOver(e)  { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; e.currentTarget.classList.add('drag-over'); }
+function onDragOver(e)  { e.preventDefault(); e.dataTransfer.dropEffect = stripDrag ? 'move' : 'copy'; if (!stripDrag) e.currentTarget.classList.add('drag-over'); }
 function onDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
-function onDrop(e, wallId) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); if (dragVanityId) addToWall(wallId, dragVanityId); }
+function onDrop(e, wallId) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); if (!stripDrag && dragVanityId) addToWall(wallId, dragVanityId); }
+
+function reorderStrip(fromWallId, fromIdx, toWallId, toIdx, isUpper) {
+  const fromArr = isUpper ? WALLS[fromWallId].upper : WALLS[fromWallId].placements;
+  const [item] = fromArr.splice(fromIdx, 1);
+  const toArr = isUpper ? WALLS[toWallId].upper : WALLS[toWallId].placements;
+  toArr.splice(toIdx, 0, item);
+  saveState();
+  new Set([fromWallId, toWallId]).forEach(wId => { renderWall(wId); renderElevation(wId); });
+  redrawVanities(); redraw3d();
+}
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 loadState();
