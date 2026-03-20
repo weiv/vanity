@@ -46,10 +46,14 @@ header span { font-size: 13px; opacity: 0.7; }
 
 /* Compact card for sidebar */
 .catalog-sidebar .catalog-item { padding: 8px; }
-.catalog-sidebar .catalog-photo {
-  width: calc(100% + 16px);
-  margin: -8px -8px 6px -8px;
+.catalog-photo-canvas {
+  display: block;
+  width: 100%;
   height: 64px;
+  border-radius: 4px 4px 0 0;
+  margin-bottom: 6px;
+  background: #f0f0f0;
+  cursor: zoom-in;
 }
 .catalog-sidebar .catalog-name  { font-size: 11px; }
 .catalog-sidebar .catalog-dims  { font-size: 10px; margin-bottom: 6px; }

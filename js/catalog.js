@@ -10,9 +10,7 @@ function renderCatalog() {
     card.draggable = true;
     card.dataset.vanityId = v.id;
     const sp = getSinkPos(v.id);
-    const photoHtml = v.photo
-      ? `<div class="catalog-photo"><img src="catalog/${v.photo}" style="object-position: 70% ${v.photoY}%" alt="${v.name}" loading="lazy" draggable="false"></div>`
-      : '';
+    const photoHtml = v.photo ? `<canvas class="catalog-photo-canvas"></canvas>` : '';
     const sinkPosRow = v.type !== 'sink' ? ''
       : v.fixedSinkPos
         ? `<div class="sink-pos-row"><span class="sink-pos-label">Sink:</span><span class="pos-btn active" style="cursor:default">${v.fixedSinkPos} (fixed)</span></div>`
@@ -34,10 +32,29 @@ function renderCatalog() {
     card.addEventListener('dragstart', onDragStart);
     card.addEventListener('dragend', onDragEnd);
     if (v.photo) {
-      card.querySelector('.catalog-photo').addEventListener('click', e => {
-        e.stopPropagation();
-        openPhotoLightbox(`catalog/${v.photo}`, v.name, v.photoBox);
-      });
+      const canvas = card.querySelector('.catalog-photo-canvas');
+      canvas.addEventListener('click', e => { e.stopPropagation(); openPhotoLightbox(`catalog/${v.photo}`, v.name, v.photoBox); });
+      const img = new Image();
+      img.onload = () => {
+        const W = canvas.offsetWidth || 220;
+        const H = 64;
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+        const scale = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+        const dw = img.naturalWidth * scale;
+        const dh = img.naturalHeight * scale;
+        const dx = (W - dw) / 2;
+        const dy = (H - dh) / 2;
+        ctx.drawImage(img, dx, dy, dw, dh);
+        if (v.photoBox) {
+          const [x1, y1, x2, y2] = v.photoBox;
+          ctx.strokeStyle = '#e74c3c';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(dx + x1 * dw, dy + y1 * dh, (x2 - x1) * dw, (y2 - y1) * dh);
+        }
+      };
+      img.src = `catalog/${v.photo}`;
     }
     grid.appendChild(card);
   });
@@ -56,29 +73,22 @@ function openPhotoLightbox(src, alt, box) {
   lb.addEventListener('click', () => lb.remove());
   document.body.appendChild(lb);
 
-  if (!box) {
-    lb.innerHTML = `<img src="${src}" alt="${alt}">`;
-    return;
-  }
-
   const img = new Image();
   img.onload = () => {
-    const [x1, y1, x2, y2] = box;
-    const sw = img.naturalWidth  * (x2 - x1);
-    const sh = img.naturalHeight * (y2 - y1);
-    const maxW = window.innerWidth  * 0.88;
-    const maxH = window.innerHeight * 0.88;
-    const scale = Math.min(maxW / sw, maxH / sh, 3);
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    // Crop to full width, vertical band of the product
+    const sy = box ? ih * box[1] : 0;
+    const sh = box ? ih * (box[3] - box[1]) : ih;
+    const maxW = window.innerWidth  * 0.9;
+    const maxH = window.innerHeight * 0.7;
+    const scale = Math.min(maxW / iw, maxH / sh);
     const canvas = document.createElement('canvas');
-    canvas.width  = sw * scale;
+    canvas.width  = iw * scale;
     canvas.height = sh * scale;
     canvas.style.borderRadius = '6px';
     canvas.style.boxShadow = '0 8px 40px rgba(0,0,0,.6)';
-    canvas.getContext('2d').drawImage(
-      img,
-      img.naturalWidth * x1, img.naturalHeight * y1, sw, sh,
-      0, 0, canvas.width, canvas.height
-    );
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, sy, iw, sh, 0, 0, canvas.width, canvas.height);
     lb.appendChild(canvas);
   };
   img.src = src;
