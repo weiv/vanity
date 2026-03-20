@@ -132,5 +132,5 @@ function renderWall(wallId) {
   statsEl.innerHTML = floorLine + upperLine;
 
   sumValEl.textContent = floorUsed.toFixed(1);
-  sumBoxEl.className = 'summary-box ' + (overLimit ? 'warn' : floorUsed > 0 ? 'ok' : '');
+  sumBoxEl.className = 'summary-chip ' + (overLimit ? 'warn' : floorUsed > 0 ? 'ok' : '');
 }

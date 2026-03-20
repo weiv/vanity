@@ -12,35 +12,31 @@
 
 <header>
   <h1>Bathroom Vanity Planner</h1>
-  <span>1" = 1 unit · Click ✕ on wall pieces to remove · Drag from catalog to wall</span>
+  <span>Drag from catalog to wall · Click strip piece to remove · Drag strip piece to reorder</span>
 </header>
 
-<div class="main">
+<div class="app-body">
 
-  <!-- 3D Render -->
-  <div class="render-3d-card">
-    <h2>3D View</h2>
-    <canvas id="render3dCanvas"></canvas>
-  </div>
-
-  <!-- Floor Plan -->
-  <div class="floor-plan-card">
-    <h2>Floor Plan</h2>
-    <svg id="floorPlanSvg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg"></svg>
-    <div class="fp-legend">
-      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#b0c4de"></div> Bathtub</div>
-      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#b8d8c8"></div> Shower</div>
-      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#e8e0d0"></div> Toilet</div>
-      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#4a90d9"></div> W1 Vanity</div>
-      <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#e56b6f"></div> W2 Vanity</div>
+  <!-- LEFT: Catalog sidebar -->
+  <aside class="catalog-sidebar">
+    <h2>Vanity Catalog</h2>
+    <div class="catalog-filters">
+      <button class="filter-btn active" onclick="filterCatalog('all',this)">All</button>
+      <button class="filter-btn" onclick="filterCatalog('sink',this)">Sink</button>
+      <button class="filter-btn" onclick="filterCatalog('drawer',this)">Drawer</button>
+      <button class="filter-btn" onclick="filterCatalog('base',this)">Base</button>
+      <button class="filter-btn" onclick="filterCatalog('linen',this)">Linen</button>
+      <button class="filter-btn" onclick="filterCatalog('mirror',this)">Mirror</button>
+      <button class="filter-btn" onclick="filterCatalog('medicine',this)">Medicine</button>
+      <button class="filter-btn" onclick="filterCatalog('filler',this)">Filler</button>
     </div>
-  </div>
+    <div class="catalog-grid" id="catalogGrid"></div>
+  </aside>
 
-  <!-- Wall Planners -->
-  <div class="walls-card">
-    <h2>Wall Planners</h2>
+  <!-- CENTER: Wall workspace -->
+  <main class="wall-workspace">
 
-    <!-- Elevations: side by side -->
+    <!-- Elevations: side by side (W2 left, W1 right) -->
     <div class="walls-row">
       <div class="wall-col">
         <div class="wall-elevation-wrapper">
@@ -56,7 +52,7 @@
       </div>
     </div>
 
-    <!-- Strips: side by side -->
+    <!-- Strips: side by side (W2 left, W1 right) -->
     <div class="walls-row">
       <div class="wall-col">
         <div class="wall-header">
@@ -90,35 +86,42 @@
       </div>
     </div>
 
+    <!-- Summary bar: compact chips -->
     <div class="summary-bar">
-      <div class="summary-box" id="sumW2">
-        <h3>W2 Total Width Used</h3>
-        <div><span class="count" id="sumW2val">0</span><span class="unit">"</span></div>
-        <div style="font-size:11px;color:#888;margin-top:2px">of 48" available</div>
+      <div class="summary-chip" id="sumW2">
+        <span class="chip-label">W2 used:</span>
+        <span class="count" id="sumW2val">0</span><span class="unit">"</span>
+        <span class="avail">of 48"</span>
       </div>
-      <div class="summary-box" id="sumW1">
-        <h3>W1 Total Width Used</h3>
-        <div><span class="count" id="sumW1val">0</span><span class="unit">"</span></div>
-        <div style="font-size:11px;color:#888;margin-top:2px">of 72" available</div>
+      <div class="summary-chip" id="sumW1">
+        <span class="chip-label">W1 used:</span>
+        <span class="count" id="sumW1val">0</span><span class="unit">"</span>
+        <span class="avail">of 72"</span>
       </div>
     </div>
-  </div>
 
-  <!-- Catalog -->
-  <div class="catalog-card">
-    <h2>Vanity Catalog</h2>
-    <div class="catalog-filters">
-      <button class="filter-btn active" onclick="filterCatalog('all',this)">All</button>
-      <button class="filter-btn" onclick="filterCatalog('sink',this)">Sink</button>
-      <button class="filter-btn" onclick="filterCatalog('drawer',this)">Drawer</button>
-      <button class="filter-btn" onclick="filterCatalog('base',this)">Base</button>
-      <button class="filter-btn" onclick="filterCatalog('linen',this)">Linen</button>
-      <button class="filter-btn" onclick="filterCatalog('mirror',this)">Mirror</button>
-      <button class="filter-btn" onclick="filterCatalog('medicine',this)">Medicine</button>
-      <button class="filter-btn" onclick="filterCatalog('filler',this)">Filler</button>
+  </main>
+
+  <!-- RIGHT: Preview panel -->
+  <aside class="preview-panel">
+    <div class="preview-tabs">
+      <button class="tab-btn active" onclick="switchPreviewTab('3d',this)">3D View</button>
+      <button class="tab-btn"        onclick="switchPreviewTab('fp',this)">Floor Plan</button>
     </div>
-    <div class="catalog-grid" id="catalogGrid"></div>
-  </div>
+    <div class="preview-pane" id="previewPane3d">
+      <canvas id="render3dCanvas"></canvas>
+    </div>
+    <div class="preview-pane hidden" id="previewPaneFp">
+      <svg id="floorPlanSvg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="fp-legend">
+        <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#b0c4de"></div> Bathtub</div>
+        <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#b8d8c8"></div> Shower</div>
+        <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#e8e0d0"></div> Toilet</div>
+        <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#4a90d9"></div> W1 Vanity</div>
+        <div class="fp-legend-item"><div class="fp-legend-swatch" style="background:#e56b6f"></div> W2 Vanity</div>
+      </div>
+    </div>
+  </aside>
 
 </div>
 

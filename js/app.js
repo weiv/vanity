@@ -72,6 +72,14 @@ function reorderStrip(fromWallId, fromIdx, toWallId, toIdx, isUpper) {
   redrawVanities(); redraw3d();
 }
 
+// ─── PREVIEW TABS ─────────────────────────────────────────────────────────────
+function switchPreviewTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('previewPane3d').classList.toggle('hidden', tab !== '3d');
+  document.getElementById('previewPaneFp').classList.toggle('hidden', tab !== 'fp');
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 loadState();
 renderCatalog();
