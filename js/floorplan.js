@@ -78,8 +78,8 @@ function drawWallVanities(group, placements, anchorCol, anchorRow, dir) {
   let offset = 0;
   for (const { vanity, sinkPos } of placements) {
     const pw = vanity.w, pd = vanity.d;
+    const vy = ay + offset;
     offset += pw;
-    const vy = ay - offset;
     const vx = dir > 0 ? ax : ax - pd;
     group.appendChild(el('rect', { x:vx, y:vy, width:pd, height:pw,
       fill:vanity.color, stroke:'rgba(0,0,0,.3)', 'stroke-width':0.6, opacity:0.85 }));
@@ -102,8 +102,8 @@ function drawWallMounted(group, upper, anchorCol, anchorRow, dir) {
   let offset = 0;
   for (const { vanity } of upper) {
     const pw = vanity.w, pd = Math.max(vanity.d, 0.75); // at least 0.75" visible
+    const vy = ay + offset;
     offset += pw;
-    const vy = ay - offset;
     const vx = dir > 0 ? ax : ax - pd;
     group.appendChild(el('rect', { x:vx, y:vy, width:pd, height:pw,
       fill:vanity.color, stroke:'#555', 'stroke-width':0.5,
@@ -114,11 +114,11 @@ function drawWallMounted(group, upper, anchorCol, anchorRow, dir) {
 function redrawVanities() {
   const group = document.getElementById('vanityLayer');
   group.innerHTML = '';
-  // Anchor at bottom of usable wall: W1→row 16 (south wall), W2→row 14 (slant start)
-  drawWallVanities(group, WALLS.W1.placements, 23, 16, -1);
-  drawWallVanities(group, WALLS.W2.placements,  4, 14, +1);
-  drawWallMounted(group, WALLS.W1.upper, 23, 16, -1);
-  drawWallMounted(group, WALLS.W2.upper,  4, 14, +1);
+  // Anchor at north end of usable wall (row 10); stack southward to match elevation order
+  drawWallVanities(group, WALLS.W1.placements, 23, 10, -1);
+  drawWallVanities(group, WALLS.W2.placements,  4, 10, +1);
+  drawWallMounted(group, WALLS.W1.upper, 23, 10, -1);
+  drawWallMounted(group, WALLS.W2.upper,  4, 10, +1);
 }
 
 function drawFloorPlan() {
