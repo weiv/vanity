@@ -1,3 +1,5 @@
+let lastInsertPiece = null; // tracks the piece currently showing an insert indicator
+
 function makePiece(placement, wallId, idx, isUpper) {
   const v = placement.vanity;
   const stripH = isUpper ? UPPER_STRIP_H : STRIP_H;
@@ -45,8 +47,8 @@ function makePiece(placement, wallId, idx, isUpper) {
   piece.addEventListener('dragend', () => {
     stripDrag = null;
     piece.classList.remove('dragging');
-    document.querySelectorAll('.insert-before,.insert-after')
-      .forEach(el => el.classList.remove('insert-before','insert-after'));
+    lastInsertPiece?.classList.remove('insert-before', 'insert-after');
+    lastInsertPiece = null;
   });
 
   piece.addEventListener('dragover', e => {
@@ -55,9 +57,15 @@ function makePiece(placement, wallId, idx, isUpper) {
     e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
     const { left, width } = piece.getBoundingClientRect();
-    document.querySelectorAll('.insert-before,.insert-after')
-      .forEach(el => el.classList.remove('insert-before','insert-after'));
-    piece.classList.add(e.clientX < left + width / 2 ? 'insert-before' : 'insert-after');
+    const cls = e.clientX < left + width / 2 ? 'insert-before' : 'insert-after';
+    if (lastInsertPiece !== piece) {
+      lastInsertPiece?.classList.remove('insert-before', 'insert-after');
+      lastInsertPiece = piece;
+    }
+    if (!piece.classList.contains(cls)) {
+      piece.classList.remove('insert-before', 'insert-after');
+      piece.classList.add(cls);
+    }
   });
 
   piece.addEventListener('dragleave', () => {

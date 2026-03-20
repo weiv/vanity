@@ -1,4 +1,5 @@
 let currentFilter = 'all';
+const imgCache = {}; // photo filename → HTMLImageElement, shared across filter changes
 
 function renderCatalog() {
   const grid = document.getElementById('catalogGrid');
@@ -34,8 +35,7 @@ function renderCatalog() {
     if (v.photo) {
       const canvas = card.querySelector('.catalog-photo-canvas');
       canvas.addEventListener('click', e => { e.stopPropagation(); openPhotoLightbox(`catalog/${v.photo}`, v.name, v.photoBox); });
-      const img = new Image();
-      img.onload = () => {
+      const drawThumb = img => {
         const W = canvas.offsetWidth || 220;
         const H = 64;
         canvas.width = W;
@@ -54,7 +54,15 @@ function renderCatalog() {
           ctx.strokeRect(dx + x1 * dw, dy + y1 * dh, (x2 - x1) * dw, (y2 - y1) * dh);
         }
       };
-      img.src = `catalog/${v.photo}`;
+      if (imgCache[v.photo]?.complete) {
+        drawThumb(imgCache[v.photo]);
+      } else {
+        if (!imgCache[v.photo]) {
+          imgCache[v.photo] = new Image();
+          imgCache[v.photo].src = `catalog/${v.photo}`;
+        }
+        imgCache[v.photo].addEventListener('load', () => drawThumb(imgCache[v.photo]), { once: true });
+      }
     }
     grid.appendChild(card);
   });
@@ -68,6 +76,7 @@ function filterCatalog(type, btn) {
 }
 
 function openPhotoLightbox(src, alt, box) {
+  document.querySelector('.photo-lightbox')?.remove();
   const lb = document.createElement('div');
   lb.className = 'photo-lightbox';
   lb.addEventListener('click', () => lb.remove());
@@ -85,8 +94,6 @@ function openPhotoLightbox(src, alt, box) {
     const canvas = document.createElement('canvas');
     canvas.width  = iw * scale;
     canvas.height = sh * scale;
-    canvas.style.borderRadius = '6px';
-    canvas.style.boxShadow = '0 8px 40px rgba(0,0,0,.6)';
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, sy, iw, sh, 0, 0, canvas.width, canvas.height);
     lb.appendChild(canvas);
