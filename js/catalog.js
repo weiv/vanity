@@ -41,17 +41,17 @@ function renderCatalog() {
         canvas.width = W;
         canvas.height = H;
         const ctx = canvas.getContext('2d');
-        const scale = Math.min(W / img.naturalWidth, H / img.naturalHeight);
-        const dw = img.naturalWidth * scale;
-        const dh = img.naturalHeight * scale;
-        const dx = (W - dw) / 2;
-        const dy = (H - dh) / 2;
-        ctx.drawImage(img, dx, dy, dw, dh);
         if (v.photoBox) {
           const [x1, y1, x2, y2] = v.photoBox;
-          ctx.strokeStyle = '#e74c3c';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(dx + x1 * dw, dy + y1 * dh, (x2 - x1) * dw, (y2 - y1) * dh);
+          const sx = x1 * img.naturalWidth, sy = y1 * img.naturalHeight;
+          const sw = (x2 - x1) * img.naturalWidth, sh = (y2 - y1) * img.naturalHeight;
+          const scale = Math.min(W / sw, H / sh);
+          const dw = sw * scale, dh = sh * scale;
+          ctx.drawImage(img, sx, sy, sw, sh, (W - dw) / 2, (H - dh) / 2, dw, dh);
+        } else {
+          const scale = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+          const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
+          ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
         }
       };
       if (imgCache[v.photo]?.complete) {
@@ -85,17 +85,18 @@ function openPhotoLightbox(src, alt, box) {
   const img = new Image();
   img.onload = () => {
     const iw = img.naturalWidth, ih = img.naturalHeight;
-    // Crop to full width, vertical band of the product
+    const sx = box ? iw * box[0] : 0;
     const sy = box ? ih * box[1] : 0;
+    const sw = box ? iw * (box[2] - box[0]) : iw;
     const sh = box ? ih * (box[3] - box[1]) : ih;
     const maxW = window.innerWidth  * 0.9;
-    const maxH = window.innerHeight * 0.7;
-    const scale = Math.min(maxW / iw, maxH / sh);
+    const maxH = window.innerHeight * 0.82;
+    const scale = Math.min(maxW / sw, maxH / sh);
     const canvas = document.createElement('canvas');
-    canvas.width  = iw * scale;
+    canvas.width  = sw * scale;
     canvas.height = sh * scale;
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, sy, iw, sh, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
     lb.appendChild(canvas);
   };
   img.src = src;

@@ -3,7 +3,7 @@ const VANITIES = [
   // photoBox: [x1, y1, x2, y2] as fractions of image — crops to the front-view drawing
   { id:'FA3021',     name:'Sink 30" (2 doors)',        type:'sink', w:30, h:33, d:21, color:'#FFB6C1', photo:'IMG_4065.jpeg', photoY:15, photoBox:[0.44,0.00,0.86,0.32] },
   { id:'FA3621',     name:'Sink 36" (2 doors)',        type:'sink', w:36, h:33, d:21, color:'#FF9AAA', photo:'IMG_4065.jpeg', photoY:15, photoBox:[0.44,0.00,0.86,0.32] },
-  { id:'SVA2421',    name:'Sink 24" (2 doors)',        type:'sink', w:24, h:33, d:21, color:'#FFCCD5', photo:'IMG_4067.jpeg', photoY:72, photoBox:[0.44,0.46,0.86,0.93] },
+  { id:'FA2421',     name:'Sink 24" (2 doors)',         type:'sink', w:24, h:33, d:21, color:'#FFCCD5', photo:'IMG_4067.jpeg', photoY:72, photoBox:[0.44,0.46,0.86,0.93] },
   { id:'FSVA24',     name:'Sink 24" Curved',           type:'sink', w:24, h:33, d:21, color:'#FFE0E8', photo:'IMG_4067.jpeg', photoY:22, photoBox:[0.44,0.01,0.86,0.48] },
   // Sink cabinets — fixed L/R position (no picker; layout baked in)
   { id:'FA3021DL',   name:'Sink 30" Door-L Draw-R',   type:'sink', w:30, h:33, d:21, color:'#FFB6C1', fixedSinkPos:'L', photo:'IMG_4065.jpeg', photoY:50, photoBox:[0.44,0.28,0.86,0.65] },
@@ -24,8 +24,13 @@ const VANITIES = [
   { id:'SVA18B',     name:'Base Cabinet 18"',          type:'base', w:18, h:33, d:21, color:'#A8C8E8', photo:'IMG_4068.jpeg', photoY:72, photoBox:[0.44,0.42,0.86,0.88] },
   { id:'SVA21B',     name:'Base Cabinet 21"',          type:'base', w:21, h:33, d:21, color:'#A8C8E8', photo:'IMG_4068.jpeg', photoY:72, photoBox:[0.44,0.42,0.86,0.88] },
   { id:'SVA24P',     name:'Base Cabinet 24" (2 doors)',type:'base', w:24, h:33, d:21, color:'#A8C8E8', photo:'IMG_4068.jpeg', photoY:20, photoBox:[0.44,0.00,0.86,0.44] },
+  { id:'SVA27P',     name:'Base Cabinet 27" (2 doors)',type:'base', w:27, h:33, d:21, color:'#A8C8E8', photo:'page-50.jpg', photoBox:[0.00,0.68,0.40,0.96] },
+  // Wide sink bases
+  { id:'FA4821D',    name:'Sink 48" (w/ drawers)',     type:'sink', w:48, h:33, d:21, color:'#FFB6C1', photo:'page-51.jpg', photoBox:[0.48,0.33,0.98,0.63] },
+  { id:'FA6021DD',   name:'Sink 60" (double sink)',    type:'sink', w:60, h:33, d:21, color:'#FF9AAA', photo:'page-51.jpg', photoBox:[0.00,0.63,0.55,0.87] },
   // Linen / tall
   { id:'SVA188124P', name:'Linen Cabinet 18"',         type:'linen',    w:18, h:81,   d:24,   color:'#90EE90', photo:'IMG_4069.jpeg', photoY:72, photoBox:[0.44,0.44,0.86,1.00] },
+  { id:'SVA188124D', name:'Linen Cabinet 18" (drawers)',type:'linen',   w:18, h:81,   d:24,   color:'#78d878', photo:'page-52.jpg', photoBox:[0.00,0.38,0.35,0.68] },
   { id:'DV1245',     name:'Counter Linen 12"',         type:'linen',    w:12, h:45.5, d:12,   color:'#98FB98', photo:'IMG_4070.jpeg', photoY:18, photoBox:[0.44,0.00,0.86,0.38] },
   // Wall-mounted
   { id:'WV12336',    name:'Medicine Cab 12"',          type:'medicine', w:12, h:33,   d:6,    color:'#87CEEB', photo:'IMG_4070.jpeg', photoY:52, photoBox:[0.00,0.29,0.52,0.68] },

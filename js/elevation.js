@@ -120,6 +120,40 @@ function drawElevSink(svg, vanity, sinkPos, x0, topY, w, innerTop, innerBot, inn
     }
     // Center divider
     svg.appendChild(el('line', { x1:x0+w/2, y1:doorTop, x2:x0+w/2, y2:innerBot, stroke:'rgba(0,0,0,0.2)', 'stroke-width':1.5 }));
+  } else if (vanity.id === 'FA4821D' || vanity.id === 'FA6021DD') {
+    // 48" / 60": 3 drawers left | 2 doors center | 3 drawers right
+    const sideW  = w / 4;        // each drawer bank ~25% of total
+    const centW  = w / 2;        // center doors ~50%
+    const centX  = x0 + sideW;
+    // Left drawer bank (3 drawers: 1 small + 2 large)
+    const dSmH = doorH * 0.28;
+    const dLgH = (doorH - dSmH) / 2;
+    const drawerDefs = [dSmH, dLgH, dLgH];
+    let dy = doorTop;
+    for (const dh of drawerDefs) {
+      svg.appendChild(el('rect', { x:x0+2, y:dy+2, width:sideW-4, height:dh-4, rx:1, fill:'rgba(255,255,255,0.3)', stroke:'rgba(0,0,0,0.25)', 'stroke-width':0.7 }));
+      svg.appendChild(el('line', { x1:x0+sideW/2-6, y1:dy+dh/2, x2:x0+sideW/2+6, y2:dy+dh/2, stroke:'rgba(0,0,0,0.45)', 'stroke-width':2, 'stroke-linecap':'round' }));
+      dy += dh;
+    }
+    // Right drawer bank (mirror of left)
+    const rightX = x0 + sideW + centW;
+    dy = doorTop;
+    for (const dh of drawerDefs) {
+      svg.appendChild(el('rect', { x:rightX+2, y:dy+2, width:sideW-4, height:dh-4, rx:1, fill:'rgba(255,255,255,0.3)', stroke:'rgba(0,0,0,0.25)', 'stroke-width':0.7 }));
+      svg.appendChild(el('line', { x1:rightX+sideW/2-6, y1:dy+dh/2, x2:rightX+sideW/2+6, y2:dy+dh/2, stroke:'rgba(0,0,0,0.45)', 'stroke-width':2, 'stroke-linecap':'round' }));
+      dy += dh;
+    }
+    // Center 2 doors
+    const mid = centX + centW / 2;
+    svg.appendChild(el('rect', { x:centX+2,   y:doorTop+2, width:centW/2-4, height:doorH-4, rx:1, fill:'rgba(255,255,255,0.3)', stroke:'rgba(0,0,0,0.3)', 'stroke-width':0.7 }));
+    svg.appendChild(el('rect', { x:mid+2,     y:doorTop+2, width:centW/2-4, height:doorH-4, rx:1, fill:'rgba(255,255,255,0.3)', stroke:'rgba(0,0,0,0.3)', 'stroke-width':0.7 }));
+    svg.appendChild(el('line', { x1:mid, y1:doorTop, x2:mid, y2:innerBot, stroke:'rgba(0,0,0,0.2)', 'stroke-width':1.5 }));
+    const pullY = doorTop + doorH * 0.5;
+    svg.appendChild(elevPull(mid-8, pullY-5, mid-8, pullY+5));
+    svg.appendChild(elevPull(mid+6, pullY-5, mid+6, pullY+5));
+    // Section dividers
+    svg.appendChild(el('line', { x1:x0+sideW,        y1:doorTop, x2:x0+sideW,        y2:innerBot, stroke:'rgba(0,0,0,0.2)', 'stroke-width':1.5 }));
+    svg.appendChild(el('line', { x1:x0+sideW+centW,  y1:doorTop, x2:x0+sideW+centW,  y2:innerBot, stroke:'rgba(0,0,0,0.2)', 'stroke-width':1.5 }));
   } else {
     drawElevTwoDoors(svg, x0, doorTop, w, doorH, vanity.id === 'FSVA24');
   }

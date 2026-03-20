@@ -65,10 +65,11 @@ function exportSpecSheet() {
       <td class="num">${v.h}"</td>
     </tr>`).join('');
 
-  // Capture the live floor plan SVG (strip any existing w/h before injecting)
-  const fpSvg = document.getElementById('floorPlanSvg').outerHTML
-    .replace(/\s*width="[^"]*"/g, '').replace(/\s*height="[^"]*"/g, '')
-    .replace(/(<svg[^>]*)/, '$1 width="220" height="242"');
+  // Capture the live floor plan SVG with explicit dimensions
+  const svgClone = document.getElementById('floorPlanSvg').cloneNode(true);
+  svgClone.setAttribute('width', '220');
+  svgClone.setAttribute('height', '242');
+  const fpSvg = svgClone.outerHTML;
 
   const html = `<!DOCTYPE html>
 <html lang="en">
