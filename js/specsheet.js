@@ -32,8 +32,7 @@ function exportSpecSheet() {
     const floorUsed = wall.placements.reduce((s, pl) => s + pl.vanity.w, 0);
     const upperUsed = wall.upper.reduce((s, pl) => s + pl.vanity.w, 0);
     const over = floorUsed > wall.limit;
-    wall.placements.forEach(pl => allPlacements.push(pl));
-    wall.upper.forEach(pl => allPlacements.push(pl));
+    allPlacements.push(...wall.placements, ...wall.upper);
 
     wallHtml += `<section class="wall-section">
       <h2><span class="wall-dot" style="background:${wall.color}"></span>${wall.label}</h2>
@@ -66,8 +65,9 @@ function exportSpecSheet() {
       <td class="num">${v.h}"</td>
     </tr>`).join('');
 
-  // Capture the live floor plan SVG
+  // Capture the live floor plan SVG (strip any existing w/h before injecting)
   const fpSvg = document.getElementById('floorPlanSvg').outerHTML
+    .replace(/\s*width="[^"]*"/g, '').replace(/\s*height="[^"]*"/g, '')
     .replace(/(<svg[^>]*)/, '$1 width="220" height="242"');
 
   const html = `<!DOCTYPE html>
@@ -151,6 +151,7 @@ ${wallHtml}
 </html>`;
 
   const win = window.open('', '_blank');
+  if (!win) { alert('Popup blocked — please allow popups for this page to export the spec sheet.'); return; }
   win.document.write(html);
   win.document.close();
 }

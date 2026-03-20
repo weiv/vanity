@@ -1,7 +1,7 @@
 // ─── 3D RENDER (Three.js r128) ────────────────────────────────────────────────
 // All units = inches. Room polygon in (x, z) plane; y = up.
 
-let scene, camera, renderer, controls, vanityGroup, rendererReady = false;
+let scene, camera, renderer, controls, vanityGroup, rendererReady = false, resizeObs = null;
 
 // ── Wall config (mirrors floorplan.js anchors) ────────────────────────────────
 const WALL_CONFIG = {
@@ -371,8 +371,13 @@ function buildRoom() {
   const wallMat  = new THREE.MeshPhongMaterial({ color: 0xf0ebe0, shininess: 4, side: THREE.DoubleSide });
   const floorMat = new THREE.MeshPhongMaterial({ color: 0xb0a090, shininess: 10 });
 
-  function wall(w, h, x, y, z, ry) {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), wallMat);
+  // Shared geometries for repeated wall dimensions
+  const geoSideWall    = new THREE.PlaneGeometry(ROOM_LEN, ROOM_H);   // W2, W1
+  const geoPartitionNS = new THREE.PlaneGeometry(Z_FIX, ROOM_H);      // shower divider, WC partition
+  const geoEndEW       = new THREE.PlaneGeometry(X_DIV, ROOM_H);      // shower step + shower end wall
+
+  function wall(geo, x, y, z, ry) {
+    const m = new THREE.Mesh(geo, wallMat);
     m.rotation.y = ry || 0;
     m.position.set(x, y, z);
     scene.add(m);
@@ -381,24 +386,24 @@ function buildRoom() {
   const cy = ROOM_H / 2;
 
   // Vanity side walls (full room length)
-  wall(ROOM_LEN, ROOM_H,   0, cy, ROOM_LEN / 2,  Math.PI / 2);  // W2 west wall
-  wall(ROOM_LEN, ROOM_H, 130, cy, ROOM_LEN / 2, -Math.PI / 2);  // W1 east wall
+  wall(geoSideWall,   0, cy, ROOM_LEN / 2,  Math.PI / 2);  // W2 west wall
+  wall(geoSideWall, 130, cy, ROOM_LEN / 2, -Math.PI / 2);  // W1 east wall
 
-  // Back wall (z=0): spans tub + WC only (shower has no back wall at x<X_DIV)
-  wall(130 - X_DIV, ROOM_H, (X_DIV + 130) / 2, cy, 0);
+  // Back wall (z=0): spans tub + WC only
+  wall(new THREE.PlaneGeometry(130 - X_DIV, ROOM_H), (X_DIV + 130) / 2, cy, 0);
 
-  // Shower front step (z=Z_STEP, x=0→X_DIV): boundary between shower depth and tub depth
-  wall(X_DIV, ROOM_H, X_DIV / 2, cy, Z_STEP);
+  // Shower front step (z=Z_STEP, x=0→X_DIV)
+  wall(geoEndEW, X_DIV / 2, cy, Z_STEP);
 
   // Shower/tub+WC vertical divider (x=X_DIV, z=0→Z_FIX)
-  wall(Z_FIX, ROOM_H, X_DIV, cy, Z_FIX / 2, Math.PI / 2);
+  wall(geoPartitionNS, X_DIV, cy, Z_FIX / 2, Math.PI / 2);
 
   // WC partition (x=X_WC, z=0→Z_FIX): separates tub from WC
-  wall(Z_FIX, ROOM_H, X_WC, cy, Z_FIX / 2, Math.PI / 2);
+  wall(geoPartitionNS, X_WC, cy, Z_FIX / 2, Math.PI / 2);
 
   // East-west walls at z=Z_FIX closing off shower and WC toward the vanity zone
-  wall(X_DIV,       ROOM_H, X_DIV / 2,             cy, Z_FIX);  // shower end wall (x=0→41)
-  wall(130 - X_WC,  ROOM_H, (X_WC + 130) / 2,      cy, Z_FIX);  // WC end wall (x=103→130)
+  wall(geoEndEW,                                         X_DIV / 2,        cy, Z_FIX);  // shower end wall
+  wall(new THREE.PlaneGeometry(130 - X_WC, ROOM_H), (X_WC + 130) / 2, cy, Z_FIX);  // WC end wall
 
   // Floor
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(130, ROOM_LEN), floorMat);
@@ -458,7 +463,9 @@ function init3d() {
 
   rendererReady = true;
 
-  new ResizeObserver(onResize3d).observe(canvas);
+  if (resizeObs) resizeObs.disconnect();
+  resizeObs = new ResizeObserver(onResize3d);
+  resizeObs.observe(canvas);
 
   redraw3d();
   animate3d();
